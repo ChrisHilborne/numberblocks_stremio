@@ -18,9 +18,10 @@ type episode struct {
 }
 
 type stream struct {
-	YtID  string `json:"ytId"`
-	Name  string `json:"name"`
-	Title string `json:"title"`
+	YtID        string `json:"ytId,omitempty"`
+	ExternalURL string `json:"externalUrl,omitempty"`
+	Name        string `json:"name"`
+	Title       string `json:"title"`
 }
 
 type streamResponse struct {
@@ -65,7 +66,7 @@ func run(dataPath, outDir string) error {
 	}
 	m := manifest{
 		ID:          "com.chrishilborne.numberblocks-youtube",
-		Version:     "1.0.0",
+		Version:     "1.1.0",
 		Name:        "Numberblocks (YouTube)",
 		Description: "Plays Numberblocks episodes from the official Numberblocks YouTube channel.",
 		Resources:   []resource{{Name: "stream", Types: []string{"series"}, IDPrefixes: []string{seriesID}}},
@@ -76,11 +77,19 @@ func run(dataPath, outDir string) error {
 		return err
 	}
 	for key, ep := range eps {
-		resp := streamResponse{Streams: []stream{{
-			YtID:  ep.YouTubeID,
-			Name:  "YouTube",
-			Title: ep.Title + "\nOfficial Numberblocks channel",
-		}}}
+		resp := streamResponse{Streams: []stream{
+			{
+				YtID:  ep.YouTubeID,
+				Name:  "YouTube",
+				Title: ep.Title + "\nOfficial Numberblocks channel",
+			},
+			{
+				// Hands off to the native YouTube app, which plays more smoothly on TVs.
+				ExternalURL: "https://www.youtube.com/watch?v=" + ep.YouTubeID,
+				Name:        "YouTube app",
+				Title:       ep.Title + "\nOpen in the YouTube app",
+			},
+		}}
 		path := filepath.Join(outDir, "stream", "series", fmt.Sprintf("%s:%s.json", seriesID, key))
 		if err := writeJSON(path, resp); err != nil {
 			return err
