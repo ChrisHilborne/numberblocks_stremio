@@ -87,6 +87,10 @@ func run(dataPath, outDir string) error {
 			return err
 		}
 	}
+	// Raw episode list for the numberblocks_tv app.
+	if err := os.WriteFile(filepath.Join(outDir, "episodes.json"), raw, 0o644); err != nil {
+		return err
+	}
 	if err := os.WriteFile(filepath.Join(outDir, ".nojekyll"), nil, 0o644); err != nil {
 		return err
 	}
