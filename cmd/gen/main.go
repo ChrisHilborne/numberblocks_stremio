@@ -91,6 +91,14 @@ func run(dataPath, outDir string) error {
 	if err := os.WriteFile(filepath.Join(outDir, "episodes.json"), raw, 0o644); err != nil {
 		return err
 	}
+	// Alphablocks list for the same app; not part of the Stremio addon.
+	alpha, err := os.ReadFile(filepath.Join(filepath.Dir(dataPath), "alphablocks.json"))
+	if err != nil {
+		return err
+	}
+	if err := os.WriteFile(filepath.Join(outDir, "alphablocks.json"), alpha, 0o644); err != nil {
+		return err
+	}
 	if err := os.WriteFile(filepath.Join(outDir, ".nojekyll"), nil, 0o644); err != nil {
 		return err
 	}
